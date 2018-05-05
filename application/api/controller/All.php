@@ -81,7 +81,7 @@ class All extends Api
         }
 
         $limit = $limit+($page-1)*$limit;
-        $list = Content::where("id in ({$str})")->field('id,title,cover_image')->limit(0,$limit)->select();
+        $list = Content::where("id in ({$str})")->field('id,title,cover_image')->order('id DESC')->limit(0,$limit)->select();
         $return['page_detail'] = $pageDetail;
         $return['active_list'] = $list;
         return json($return);
@@ -121,7 +121,7 @@ class All extends Api
         }
 
         $idStr = rtrim($idStr,',');
-        $list = Content::where("id in ({$idStr})")->field('id,title,cover_image,create_time')->limit($length)->select();
+        $list = Content::where("id in ({$idStr}) and id != {$id}")->field('id,title,cover_image,create_time')->limit($length)->select();
         return json($list);
     }
 
@@ -178,7 +178,7 @@ class All extends Api
     {
         $list = Collect::where("appid={$app_id} and uid={$uid}")->with(['content'=>function($query)
         {
-            $query->field('id,title,cover_image,create_time');
+            $query->field('id,title,cover_image,create_time,content');
         }])->field('id,content_id')->select();
         return json($list);
     }
