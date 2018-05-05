@@ -7,6 +7,7 @@ use app\api\model\Banner;
 use app\api\model\Collect;
 use app\api\model\Column;
 use app\api\model\Content;
+use app\api\service\UserLogin;
 use app\api\service\UsersRegister;
 use app\common\controller\Api;
 use \app\api\library\BaseException;
@@ -39,10 +40,12 @@ class All extends Api
      * get: 获取banner列表 type:跳转位置:0=内容详情页,1=更多好玩,2=客服,3=跳转小程序
      * path: banner_list
      * param: app_id - {int} = '' app_id
+     * param: uid - {int} = '' uid
      */
     public function banner_list($app_id)
     {
         $list = Banner::where('status_data','=',1)->where('app_id_from','=',$app_id)->select();
+        (new UserLogin())->record(input('uid'));
         return json($list);
     }
 
@@ -176,7 +179,7 @@ class All extends Api
         $list = Collect::where("appid={$app_id} and uid={$uid}")->with(['content'=>function($query)
         {
             $query->field('id,title,cover_image,create_time');
-        }])->field('content_id')->select();
+        }])->field('id,content_id')->select();
         return json($list);
     }
 
@@ -201,13 +204,33 @@ class All extends Api
      */
     public function get_ad($app_id)
     {
-        $list['content_ad'] = db('ad')->field('type_id,code')->where('appid','=',$app_id)->where('is_open','=',1)->where('where','=',0)->select();
+        $content_ad = db('ad')->field('code')->where('appid','=',$app_id)->where('is_open','=',1)->where('where','=',0)->select();
+        //将所有广告随机填充到首页吗每6个文章下面
+        $contentList = db('appid_contentid')->where("appid={$app_id}")->field('contentid')->select();
+
+        $page = ceil(count($contentList)/6);
+        $arr = [];
+//        dump($contentList);exit();
+        if ($content_ad) {
+            for($i=0;$i<$page;$i++){
+                $arr[$i]['content_id'] = $contentList[($i)*6]['contentid'];
+                $arr[$i]['code'] = $content_ad[rand(0,count($content_ad)-1)]['code'];
+            }
+            $list['content_index'] = $arr;
+        }else{
+            $list['content_index'] = [];
+        }
+
+
         $list['banner'] = db('ad')->field('code')->where('appid','=',$app_id)->where('is_open','=',1)->where('where','=',1)->select();
         $list['collect_top'] = db('ad')->field('code')->where('appid','=',$app_id)->where('is_open','=',1)->where('where','=',2)->select();
         $list['collect_bottom'] = db('ad')->field('code')->where('appid','=',$app_id)->where('is_open','=',1)->where('where','=',3)->select();
         $list['content_top'] = db('ad')->field('code')->where('appid','=',$app_id)->where('is_open','=',1)->where('where','=',4)->select();
         $list['content_mid'] = db('ad')->field('code')->where('appid','=',$app_id)->where('is_open','=',1)->where('where','=',5)->select();
         $list['content_bottom'] = db('ad')->field('code')->where('appid','=',$app_id)->where('is_open','=',1)->where('where','=',6)->select();
+
+
+
         return json($list);
     }
 

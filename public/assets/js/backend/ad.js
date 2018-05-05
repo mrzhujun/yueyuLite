@@ -27,7 +27,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id')},
                         {field: 'appid', title: __('Appid')},
                         {field: 'code', title: __('Code')},
-                        {field: 'type_id', title: __('Type_id')},
+                        // {field: 'type_id', title: __('Type_id')},
                         {field: 'where', title: __('Where'), visible:false, searchList: {"0":__('Where 0'),"1":__('Where 1'),"2":__('Where 2'),"3":__('Where 3'),"4":__('Where 4'),"5":__('Where 5'),"6":__('Where 6')}},
                         {field: 'where_text', title: __('Where'), operate:false},
                         {field: 'is_open', title: __('Is_open'), visible:false, searchList: {"0":__('Is_open 0'),"1":__('Is_open 1')}},

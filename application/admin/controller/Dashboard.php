@@ -44,15 +44,17 @@ class Dashboard extends Backend
         $newUser = db('users')->where("create_time > ".\fast\Date::unixtime('day'))->count();
         //今日访客数
         $todayUserCount = db('counting')->where('login_time_int>'.\fast\Date::unixtime('day'))->count();
+        //今日流量
+        $todayUserView = db('counting')->where('login_time_int>'.\fast\Date::unixtime('day'))->sum('tips');
 
 
         $this->view->assign([
             'totaluser'        => $totaluser,//总会员数
             'totalviews'       => $newUser,//今日新增会员数
             'totalorder'       => $todayUserCount,//今日访客数
-            'totalorderamount' => '-',
-            'todayuserlogin'   => $newUser,
-            'todayusersignup'  => $todayUserCount,
+            'totalorderamount' => $todayUserView,
+            'todayuserlogin'   => '-',
+            'todayusersignup'  => '-',
             'todayorder'       => '-',
             'unsettleorder'    => '-',
             'sevendnu'         => '-',

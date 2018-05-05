@@ -8,7 +8,7 @@ return [
     'Total user'              => '总会员数',
     'Total view'              => '今日新增会员',
     'Total order'             => '今日访客数',
-    'Total order amount'      => '总金额',
+    'Total order amount'      => '今日流量',
     'Today user signup'       => '今日注册',
     'Today user login'        => '今日登录',
     'Today order'             => '今日订单',
